@@ -1,0 +1,34 @@
+--------- ±âº»º¯¼ö Ãâ·Â ------------------------------------------
+HOSTNAME=[dfep03]
+PROCESS =[ps_man]
+SVRNM   =[FEP]
+DATE    =[20160229]
+TIME    =[000101]
+Mon Feb 29 00:01:01 KST 2016
+------------------------------------------------------------
+
+* KILL THE PROCESS
+    Á¾·á : kill -9 20160
+* RUN THE PROCESS
+[44m< /hw01/ibridge/ib2/bin/ps_man PS_MANAGER >[0m
+Program : [/hw01/ibridge/ib2/bin/ps_man], Version : 2013.10.29 °­¼®. shell ÇÁ·Î±×·¥µµ Ã³¸® °¡´ÉÅä·Ï ¼öÁ¤
+	 -------------------------------------------
+	 CfgGetMaster(ib.version  )  [vela.130807.0]
+	 CfgGetMaster(ib.serialkey)  [c37r8yjTY278u3]
+	 CfgGetMaster(ib.author   )  [Kang Seok]
+	 CfgGetMaster(ib.company  )  [ICA]
+	 -------------------------------------------
+
+ÇÁ·Î±×·¥À» ½ÃÀÛÇÕ´Ï´Ù.
+[44m< /hw01/ibridge/ib2/bin/ps_man PS_MANAGER >[0m
+Program : [/hw01/ibridge/ib2/bin/ps_man], Version : 2013.10.29 °­¼®. shell ÇÁ·Î±×·¥µµ Ã³¸® °¡´ÉÅä·Ï ¼öÁ¤
+	 -------------------------------------------
+	 CfgGetMaster(ib.version  )  [vela.130807.0]
+	 CfgGetMaster(ib.serialkey)  [c37r8yjTY278u3]
+	 CfgGetMaster(ib.author   )  [Kang Seok]
+	 CfgGetMaster(ib.company  )  [ICA]
+	 -------------------------------------------
+
+ÇÁ·Î±×·¥À» ½ÃÀÛÇÕ´Ï´Ù.
+    ½ÇÇà : ps_man  : PID=16989
+MAKE THE RECV/SEND FOLDER

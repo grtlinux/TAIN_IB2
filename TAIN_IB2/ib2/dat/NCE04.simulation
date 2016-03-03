@@ -1,0 +1,24 @@
+#------------------------------------------------------------------------------#
+# £Ó£É£Í£Õ£Ì£Á£Ô£Ï£Ò                                                           #
+# K:message Key                                                                #
+# I:Ignore, D:Data, S:Send, P:Pause, i:insert, u:update, d:delete, +:plus      #
+#------------------------------------------------------------------------------#
+K|OSANCE0401|13,4|17,6|TMP Simulation
+I|OSANCE0401|9|
+I|OSANCE0401|081|
+I|OSANCE0401|021|
+I|OSANCE0401|041|
+D|OSANCE0401|0|23,1|C
+D|OSANCE0401|0|24,3|000
+D|OSANCE0401|0|39,12|269$N{9:CNTR_NO}
+D|OSANCE0401|0|15,2|10
+#
+K|OSANCE0402|13,4|17,6|TMP Simulation
+I|OSANCE0402|9|
+I|OSANCE0402|081|
+I|OSANCE0402|021|
+I|OSANCE0402|041|
+D|OSANCE0402|0|23,1|C
+D|OSANCE0402|0|24,3|000
+D|OSANCE0402|0|39,12|269$N{9:CNTR_NO}
+D|OSANCE0402|0|15,2|10

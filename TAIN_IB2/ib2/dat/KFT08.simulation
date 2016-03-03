@@ -1,0 +1,25 @@
+#------------------------------------------------------------------------------#
+# £Ó£É£Í£Õ£Ì£Á£Ô£Ï£Ò                                                           #
+# K:message Key                                                                #
+# I:Ignore, D:Data, S:Send, P:Pause                                            #
+#------------------------------------------------------------------------------#
+K|OSAKFT0801|7,3|13,4|17,6|PG Simulation
+I|OSAKFT0801|PGS_9|
+I|OSAKFT0801|PGS_021|
+I|OSAKFT0801|PGS_043|
+I|OSAKFT0801|PGS_081|
+u|OSAKFT0801|PGS|23,1|C
+u|OSAKFT0801|PGS|24,3|000
+u|OSAKFT0801|PGS|27,12|249$N{9:CNTR_TRNO}
+u|OSAKFT0801|PGS|39,12|$D{YYMMDDhhmmss}
+u|OSAKFT0801|PGS_0200|12,4|0210
+u|OSAKFT0801|PGS_0420|13,4|0430
+u|OSAKFT0801|PGS_0800|13,4|0810
+S|OSAKFT0801|PGS_02|
+S|OSAKFT0801|PGS_04|
+S|OSAKFT0801|PGS_08|
+#u|OSAKFT0801|PGS_080|122,9|249$N{6:CNTR_TRNO}
+#+|OSAKFT0801|PGS_080|0,4|2
+#d|OSAKFT0801|PGS_080|143,2|
+#i|OSAKFT0801|PGS_080|131,2|**
+#u|OSAKFT0801|PGS_080|122,9|249$N{9:CNTR_TRNO}

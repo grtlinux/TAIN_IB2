@@ -1,0 +1,710 @@
+#!/bin/ksh
+# Ignore HUP, INT, QUIT now.
+trap "" 1 3 15
+
+#---------------------------------------------------------------------
+# ENVIRONMENT
+#
+HOME_DIR=/hw01/ibridge
+HOST_NAME=`hostname`
+IBDIR=${HOME_DIR}/ib2
+IBBINDIR=${HOME_DIR}/ib2/bin
+
+#---------------------------------------------------------------------
+# FUNCTION     killSvc
+#     ex) ps -ef | grep OIRKBB0101 | grep -v vi | grep -v tail | grep -v grep | grep -v xrun | grep -v xend
+#         ps -ef | grep OIRKBB0101 | grep -v vi | grep -v tail | grep -v grep | grep -v xrun | grep -v xend | awk '{ print $2 }'
+#
+killSvc()
+{
+	# echo "STATUS : ¼­ºñ½º(${SVC_NM}:${SVC_CD})À» Á¾·áÇÕ´Ï´Ù..."
+
+	PID=`ps -ef | grep ${SVC_NM} | grep -v vi | grep -v tail | grep -v grep | grep -v ibrun | grep -v ibend | awk '{ print $2 }'`
+
+	if [ "${PID}" = "" ];
+	then
+		echo "[32mSTATUS : service [${SVC_NM}] is not running...[0m"
+	else
+		echo "#--------------------------------------------------------------------#"
+		ps -ef | grep ${SVC_NM} | grep -v vi | grep -v tail | grep -v grep | grep -v xrun | grep -v xend
+		# ps -ef | grep $1 | grep -v vi | grep -v tail | grep -v grep | grep -v xrun | grep -v xend | awk '{print $2}' | xargs kill
+		# echo ${PID} | xargs kill    # signal handler Ã³¸®
+#		kill -9 ${PID}              # Ä¡¸íÀûÀÎ ¾àÁ¡Àº signal handler Ã³¸®¸¦ ¸øÇÔ
+		kill ${PID}              # Ä¡¸íÀûÀÎ ¾àÁ¡Àº signal handler Ã³¸®¸¦ ¸øÇÔ
+		echo "[32mSTATUS : service [${SVC_NM}] stopped ...(sleep 1).[0m"
+		echo "#--------------------------------------------------------------------#"
+		sleep 1
+	fi
+}
+
+#---------------------------------------------------------------------
+# FUNCTION     display
+#
+display()
+{
+	# ±â°ü¸í Ãâ·Â
+	case ${ORG_CD} in
+		"TMP" ) echo "±â°ü¸í : Å×½ºÆ®±â°ü";;
+		"KBB" ) echo "±â°ü¸í : (KBB) ±¹¹ÎÀºÇà        ";;
+		"SHB" ) echo "±â°ü¸í : (SHB) ½ÅÇÑÀºÇà        ";;
+		"WRB" ) echo "±â°ü¸í : (WRB) ¿ì¸®ÀºÇà        ";;
+		"TKB" ) echo "±â°ü¸í : (TKB) ´ë±¸ÀºÇà        ";;
+		"EXB" ) echo "±â°ü¸í : (EXB) ¿ÜÈ¯ÀºÇà        ";;
+		"HNB" ) echo "±â°ü¸í : (HNB) ÇÏ³ªÀºÇà        ";;
+		"PSB" ) echo "±â°ü¸í : (PSB) ºÎ»êÀºÇà        ";;
+		"POS" ) echo "±â°ü¸í : (POS) ¿ìÃ¼±¹          ";;
+		"NHB" ) echo "±â°ü¸í : (NHB) ³óÇù            ";;
+		"GUB" ) echo "±â°ü¸í : (GUB) ±â¾÷ÀºÇà(x3)    ";;
+		"SCB" ) echo "±â°ü¸í : (SCB) SCÁ¦ÀÏÀºÇà      ";;
+		"SHC" ) echo "±â°ü¸í : (SHC) ½ÅÇÑÄ«µå        ";;
+		"HDC" ) echo "±â°ü¸í : (HDC) Çö´ëÄ«µå        ";;
+		"LTC" ) echo "±â°ü¸í : (LTC) ·Ôµ¥Ä«µå        ";;
+		"SSC" ) echo "±â°ü¸í : (SSC) »ï¼ºÄ«µå        ";;
+		"CTC" ) echo "±â°ü¸í : (CTC) ½ÃÆ¼Ä«µå        ";;
+		"NHC" ) echo "±â°ü¸í : (NHC) ³óÇùÄ«µå        ";;
+		"BCC" ) echo "±â°ü¸í : (BCC) BCÄ«µå          ";;
+		"KBC" ) echo "±â°ü¸í : (KBC) ±¹¹ÎÄ«µå        ";;
+		"DHI" ) echo "±â°ü¸í : (DHI) ´ëÇÑ»ý¸í        ";;
+		"KIS" ) echo "±â°ü¸í : (KIS) ³ªÀÌ½º          ";;
+		"KFT" ) echo "±â°ü¸í : (KFT) ±ÝÀ¶°áÁ¦¿ø      ";;
+		"NCE" ) echo "±â°ü¸í : (NCE) NICE            ";;
+		"HNT" ) echo "±â°ü¸í : (HNT) ÇÑ³×Æ®          ";;
+		"GBK" ) echo "±â°ü¸í : (GBK) °ÔÀÌÆ®¹ðÅ©      ";;
+		"HYS" ) echo "±â°ü¸í : (HYS) È¿¼º            ";;
+		"CHO" ) echo "±â°ü¸í : (CHO) Ã»È£            ";;
+		"KBK" ) echo "±â°ü¸í : (KBK) KISBANK         ";;
+		"LOT" ) echo "±â°ü¸í : (LOT) ·Ôµ¥            ";;
+		"SSN" ) echo "±â°ü¸í : (SSN) »ï¼º³×Æ®À¨      ";;
+		"KSN" ) echo "±â°ü¸í : (KSN) KS-NET          ";;
+		"LGU" ) echo "±â°ü¸í : (LGU) LGÀ¯ÇÃ·¯½º      ";;
+		"TAT" ) echo "±â°ü¸í : (TAT) ¾ÅÅ©¿¡ÀÌÆ¼      ";;
+		"HWI" ) echo "±â°ü¸í : (HWI) ÇÑÈ­»ý¸í        ";;
+		"SHI" ) echo "±â°ü¸í : (SHI) ½ÅÇÑ»ý¸í        ";;
+		"HNI" ) echo "±â°ü¸í : (HNI) ÇÏ³ªHSBC»ý¸í    ";;
+		"HKI" ) echo "±â°ü¸í : (HKI) Èï±¹»ý¸í        ";;
+		"KFI" ) echo "±â°ü¸í : (KFI) Ä«µðÇÁ»ý¸í      ";;
+		"ALI" ) echo "±â°ü¸í : (ALI) ¾Ë¸®¾ÈÃ÷»ý¸í    ";;
+		"SSI" ) echo "±â°ü¸í : (SSI) »ï¼º»ý¸í        ";;
+		"ETD" ) echo "±â°ü¸í : (SSI) »ï¼º»ý¸í        ";;
+		* ) echo "[31m??? ¸ð¸£´Â ±â°ü¸íÀÔ´Ï´Ù.[0m"
+			return 9
+			;;
+	esac
+
+	# ¼­ºñ½º ±¸ºÐ Ãâ·Â
+	if [ ${SVC_NO} -lt 50 ];
+	then
+		echo "¼­ºñ½º : ¿Â¶óÀÎ ¼­ºñ½º"
+	else
+		echo "¼­ºñ½º : ¹èÄ¡ ¼­ºñ½º"
+	fi
+	
+	return 0
+}
+
+#---------------------------------------------------------------------
+# FUNCTION     execute
+#
+execute()
+{
+	echo "STATUS : ¼­ºñ½º¸í(${SVC_NM}:${SVC_CD})À» ½ÇÇàÇÕ´Ï´Ù..."
+
+	#-------------------------------------------------
+	# ¼­ºñ½º¸í ºÐ¼®
+	# ¼­ºñ½ºÄÚµå(3) ±â°üÄÚµå(3) ¼­ºñ½º¹øÈ£(2) ¼­¹ö¹øÈ£(2)
+	# OFS_KBB_01_01
+	#
+	ORG_CD=`expr substr ${SVC_NM} 4 3`
+	SVC_NO=`expr substr ${SVC_NM} 7 2`
+	SVR_NO=`expr substr ${SVC_NM} 9 2`
+	echo "STATUS : [SVC_NM=${SVC_NM}] [SVC_CD=${SVC_CD}] [ORG_CD=${ORG_CD}] [SVC_NO=${SVC_NO}] [SVR_NO=${SVR_NO}]"
+	
+	#-------------------------------------------------
+	# Ãâ·Â½Ã ¿¡·¯ ¹ß»ýÇÏ¸é ¸®ÅÏÇÑ´Ù.
+	display
+	if [ $? -eq 9 ];
+	then
+		return 9;
+	fi
+
+	#-------------------------------------------------
+	# ±âÁ¸ ÇÁ·Î¼¼½º¸¦ Á¾·á½ÃÅ²´Ù.
+	#killSvc;
+
+	#-------------------------------------------------
+	# ÇÁ·Î¼¼½º¸¦ ½ÇÇàÇÑ´Ù.
+
+	if [ ${SVC_NO} -lt 50 ];
+	then
+		# ¿Â¶óÀÎ ¼­ºñ½º
+		case ${SVC_CD} in
+			"OFS" ) case ${SVC_NM} in
+				"OFSCHO0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/ofscho2 ${SVC_NM}"; ${IBBINDIR}/ofscho2 ${SVC_NM};;
+				* ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/ofscom2 ${SVC_NM}";  ${IBBINDIR}/ofscom2 ${SVC_NM};;
+				esac
+				;;
+			"OFR" ) case ${SVC_NM} in
+				"OFRCHO0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/ofrcho2 ${SVC_NM}"; ${IBBINDIR}/ofrcho2 ${SVC_NM};;
+				* ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/ofrcom2 ${SVC_NM}";  ${IBBINDIR}/ofrcom2 ${SVC_NM};;
+				esac
+				;;
+			"OIS" ) case ${SVC_NM} in
+				"OISCHO0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oischo2 ${SVC_NM}"; ${IBBINDIR}/oischo2 ${SVC_NM};;
+				"OISKFT0301" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oiscom3 ${SVC_NM}"; ${IBBINDIR}/oiscom3 ${SVC_NM};;
+				* ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oiscom2 ${SVC_NM}";  ${IBBINDIR}/oiscom2 ${SVC_NM};;
+				esac
+				;;
+			"OIR" ) case ${SVC_NM} in
+				"OIRCHO0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oircho2 ${SVC_NM}"; ${IBBINDIR}/oircho2 ${SVC_NM};;
+				* ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oircom2 ${SVC_NM}";  ${IBBINDIR}/oircom2 ${SVC_NM};;
+				esac
+				;;
+			"OXS" ) case ${SVC_NM} in
+				"OXSWRB0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxsmeg2 ${SVC_NM}"; ${IBBINDIR}/oxsmeg2 ${SVC_NM};;
+				"OXSWRB0201" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxsmeg2 ${SVC_NM}"; ${IBBINDIR}/oxsmeg2 ${SVC_NM};;
+				"OXSWRB0301" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxsmeg2 ${SVC_NM}"; ${IBBINDIR}/oxsmeg2 ${SVC_NM};;
+				"OXSWRB0401" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxsmeg2 ${SVC_NM}"; ${IBBINDIR}/oxsmeg2 ${SVC_NM};;
+				"OXSWRB0501" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxsmeg2 ${SVC_NM}"; ${IBBINDIR}/oxsmeg2 ${SVC_NM};;
+				"OXSWRB0601" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxsmeg2 ${SVC_NM}"; ${IBBINDIR}/oxsmeg2 ${SVC_NM};;
+				"OXSWRB0701" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxsmeg2 ${SVC_NM}"; ${IBBINDIR}/oxsmeg2 ${SVC_NM};;
+				"OXSWRB0801" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxsmeg2 ${SVC_NM}"; ${IBBINDIR}/oxsmeg2 ${SVC_NM};;
+				"OXSEXB0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxsmeg2 ${SVC_NM}"; ${IBBINDIR}/oxsmeg2 ${SVC_NM};;
+				"OXSEXB0201" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxsmeg2 ${SVC_NM}"; ${IBBINDIR}/oxsmeg2 ${SVC_NM};;
+				"OXSHNB0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxsmeg2 ${SVC_NM}"; ${IBBINDIR}/oxsmeg2 ${SVC_NM};;
+				"OXSHNB0201" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxsmeg2 ${SVC_NM}"; ${IBBINDIR}/oxsmeg2 ${SVC_NM};;
+				"OXSCHO0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxscho2 ${SVC_NM}"; ${IBBINDIR}/oxscho2 ${SVC_NM};;
+				"OXSDHI0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxsdhi2 ${SVC_NM}"; ${IBBINDIR}/oxsdhi2 ${SVC_NM};;
+				"OXSDHI0201" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxsdhi2 ${SVC_NM}"; ${IBBINDIR}/oxsdhi2 ${SVC_NM};;
+				"OXSDHI0301" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxsdhi2 ${SVC_NM}"; ${IBBINDIR}/oxsdhi2 ${SVC_NM};;
+#				"OXSKBB0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxskbb  ${SVC_NM}"; ${IBBINDIR}/oxskbb  ${SVC_NM};;
+				* ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxscom2 ${SVC_NM}";  ${IBBINDIR}/oxscom2 ${SVC_NM};;
+				esac
+				;;
+			"OXR" ) case ${SVC_NM} in
+				"OXRWRB0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxrmeg2 ${SVC_NM}"; ${IBBINDIR}/oxrmeg2 ${SVC_NM};;
+				"OXRWRB0201" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxrmeg2 ${SVC_NM}"; ${IBBINDIR}/oxrmeg2 ${SVC_NM};;
+				"OXRWRB0301" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxrmeg2 ${SVC_NM}"; ${IBBINDIR}/oxrmeg2 ${SVC_NM};;
+				"OXRWRB0401" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxrmeg2 ${SVC_NM}"; ${IBBINDIR}/oxrmeg2 ${SVC_NM};;
+				"OXRWRB0501" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxrmeg2 ${SVC_NM}"; ${IBBINDIR}/oxrmeg2 ${SVC_NM};;
+				"OXRWRB0601" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxrmeg2 ${SVC_NM}"; ${IBBINDIR}/oxrmeg2 ${SVC_NM};;
+				"OXRWRB0701" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxrmeg2 ${SVC_NM}"; ${IBBINDIR}/oxrmeg2 ${SVC_NM};;
+				"OXRWRB0801" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxrmeg2 ${SVC_NM}"; ${IBBINDIR}/oxrmeg2 ${SVC_NM};;
+				"OXREXB0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxrmeg2 ${SVC_NM}"; ${IBBINDIR}/oxrmeg2 ${SVC_NM};;
+				"OXREXB0201" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxrmeg2 ${SVC_NM}"; ${IBBINDIR}/oxrmeg2 ${SVC_NM};;
+				"OXRHNB0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxrmeg2 ${SVC_NM}"; ${IBBINDIR}/oxrmeg2 ${SVC_NM};;
+				"OXRHNB0201" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxrmeg2 ${SVC_NM}"; ${IBBINDIR}/oxrmeg2 ${SVC_NM};;
+				"OXRCHO0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxrcho2 ${SVC_NM}"; ${IBBINDIR}/oxrcho2 ${SVC_NM};;
+				"OXRDHI0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxrdhi2 ${SVC_NM}"; ${IBBINDIR}/oxrdhi2 ${SVC_NM};;
+				"OXRDHI0201" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxrdhi2 ${SVC_NM}"; ${IBBINDIR}/oxrdhi2 ${SVC_NM};;
+				"OXRDHI0301" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxrdhi2 ${SVC_NM}"; ${IBBINDIR}/oxrdhi2 ${SVC_NM};;
+#				"OXRKBB0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxrkbb  ${SVC_NM}"; ${IBBINDIR}/oxrkbb  ${SVC_NM};;
+				* ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxrcom2 ${SVC_NM}";  ${IBBINDIR}/oxrcom2 ${SVC_NM};;
+				esac
+				;;
+			"OXA" ) case ${SVC_NM} in
+#				"OXASCB0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxascb ${SVC_NM}"; ${IBBINDIR}/oxascb ${SVC_NM};;
+				"OXASCB0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxascb2 ${SVC_NM}"; ${IBBINDIR}/oxascb2 ${SVC_NM};;
+				"OXATAT0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxatat2 ${SVC_NM}"; ${IBBINDIR}/oxatat2 ${SVC_NM};;
+				"OXASHC0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxatat2 ${SVC_NM}"; ${IBBINDIR}/oxatat2 ${SVC_NM};;
+				"OXAHDC0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxameg2 ${SVC_NM}"; ${IBBINDIR}/oxameg2 ${SVC_NM};;
+				"OXAHDC0201" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxameg2 ${SVC_NM}"; ${IBBINDIR}/oxameg2 ${SVC_NM};;
+				"OXAHDC0301" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxameg2 ${SVC_NM}"; ${IBBINDIR}/oxameg2 ${SVC_NM};;
+				"OXAHDC0401" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxameg2 ${SVC_NM}"; ${IBBINDIR}/oxameg2 ${SVC_NM};;
+				"OXAHNB0301" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxameg2 ${SVC_NM}"; ${IBBINDIR}/oxameg2 ${SVC_NM};;
+				"OXASSC0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxameg2 ${SVC_NM}"; ${IBBINDIR}/oxameg2 ${SVC_NM};;
+				"OXAPOS0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxameg2 ${SVC_NM}"; ${IBBINDIR}/oxameg2 ${SVC_NM};;
+				"OXAKFT1101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxakft2 ${SVC_NM}"; ${IBBINDIR}/oxakft2 ${SVC_NM};;
+				"OXAKFT1201" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxakft2 ${SVC_NM}"; ${IBBINDIR}/oxakft2 ${SVC_NM};;
+				"OXALGU0101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxakft2 ${SVC_NM}"; ${IBBINDIR}/oxakft2 ${SVC_NM};;
+				* ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/oxatat2 ${SVC_NM}";  ${IBBINDIR}/oxatat2 ${SVC_NM};;
+				esac
+				;;
+			"OSA" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/osacom ${SVC_NM}";  ${IBBINDIR}/osacom ${SVC_NM};;
+			"IBN" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/IBnet  ${SVC_NM}";  ${IBBINDIR}/IBnet ${SVC_NM};;
+			*)
+				echo "[31mERROR : [SVC_CD=${SVC_CD}] ¸ð¸£´Â ¼­ºñ½ºÄÚµå ÀÔ´Ï´Ù.[0m"
+				return 9;
+				;;
+		esac
+	else
+		# ¹èÄ¡ ¼­ºñ½º
+		case ${SVC_CD} in
+			"OFS" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bfscom2 ${SVC_NM}"; ${IBBINDIR}/bfscom2 ${SVC_NM};;
+			"OFR" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bfrcom2 ${SVC_NM}"; ${IBBINDIR}/bfrcom2 ${SVC_NM};;
+			"OIS" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/biscom2 ${SVC_NM}"; ${IBBINDIR}/biscom2 ${SVC_NM};;
+			"OIR" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bircom2 ${SVC_NM}"; ${IBBINDIR}/bircom2 ${SVC_NM};;
+			"BXS" ) case ${SVC_NM} in
+				"BXSKFT5101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxskft1 ${SVC_NM}";  ${IBBINDIR}/bxskft1 ${SVC_NM};;
+				"BXSKFT5201" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxskft2 ${SVC_NM}";  ${IBBINDIR}/bxskft2 ${SVC_NM};;
+				"BXSKFT5301" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxskft3 ${SVC_NM}";  ${IBBINDIR}/bxskft3 ${SVC_NM};;
+				"BXSKFT5401" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxskft3 ${SVC_NM}";  ${IBBINDIR}/bxskft3 ${SVC_NM};;
+				"BXSKFT5501" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxskft3 ${SVC_NM}";  ${IBBINDIR}/bxskft3 ${SVC_NM};;
+				"BXSHDC5201" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxshdc  ${SVC_NM}";  ${IBBINDIR}/bxshdc ${SVC_NM};;
+				"BXSSHC5101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxsshc  ${SVC_NM}";  ${IBBINDIR}/bxsshc ${SVC_NM};;
+				"BXSKSN5101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxsksn  ${SVC_NM}";  ${IBBINDIR}/bxsksn ${SVC_NM};;
+				"BXSSSN5101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxsssn  ${SVC_NM}";  ${IBBINDIR}/bxsssn ${SVC_NM};;
+				* ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxscom2 ${SVC_NM}";; # ${IBBINDIR}/bxscom2 ${SVC_NM};;
+				esac
+				;;
+			"BXR" ) case ${SVC_NM} in
+				"BXRKFT5101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxrkft1 ${SVC_NM}";  ${IBBINDIR}/bxrkft1 ${SVC_NM};;
+				"BXRKFT5201" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxrkft2 ${SVC_NM}";  ${IBBINDIR}/bxrkft2 ${SVC_NM};;
+				"BXRKFT5301" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxrkft3 ${SVC_NM}";  ${IBBINDIR}/bxrkft3 ${SVC_NM};;
+				"BXRKFT5401" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxrkft3 ${SVC_NM}";  ${IBBINDIR}/bxrkft3 ${SVC_NM};;
+				"BXRKFT5501" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxrkft3 ${SVC_NM}";  ${IBBINDIR}/bxrkft3 ${SVC_NM};;
+				"BXRHDC5201" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxrhdc  ${SVC_NM}";  ${IBBINDIR}/bxrhdc ${SVC_NM};;
+				"BXRSHC5101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxrshc  ${SVC_NM}";  ${IBBINDIR}/bxrshc ${SVC_NM};;
+				"BXRKSN5101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxrksn  ${SVC_NM}";  ${IBBINDIR}/bxrksn ${SVC_NM};;
+				"BXRSSN5101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxrssn  ${SVC_NM}";  ${IBBINDIR}/bxrssn ${SVC_NM};;
+				"BXRCTC5101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxrctc  ${SVC_NM}";  ${IBBINDIR}/bxrctc ${SVC_NM};;
+				"BXRLTC5101" ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxrltc  ${SVC_NM}";  ${IBBINDIR}/bxrltc ${SVC_NM};;
+				* ) killSvc; echo "RUN SCRIPT : ${IBBINDIR}/bxrcom2 ${SVC_NM}";; # ${IBBINDIR}/bxrcom2 ${SVC_NM};;
+				esac
+				;;
+			*)
+				echo "[31mERROR : [SVC_CD=${SVC_CD}] ¸ð¸£´Â ¼­ºñ½ºÄÚµå ÀÔ´Ï´Ù.[0m"
+				return 9;
+				;;
+		esac
+	fi
+
+	return 0
+}
+
+######################################################################
+#---------------------------------------------------------------------
+# MAIN PROCESS
+#
+
+#---------------------------------------------------------------------
+# ÇØ´ç ¼­¹ö¸íÀ» º¸¿©ÁØ´Ù.
+#
+# clear
+case ${HOST_NAME} in
+	"dbizap01" | "pbizap01" | "pbizap02" )
+		echo "* ¼­¹ö¸í(${HOST_NAME})Àº <¾÷¹«°èAP> ¼­¹öÀÔ´Ï´Ù.."
+		;;
+	"dfep03" | "pfep03" | "pfep04" )
+		echo "* ¼­¹ö¸í(${HOST_NAME})Àº <FEP¹ðÅ·> ¼­¹öÀÔ´Ï´Ù.."
+		;;
+	* )
+		echo "[31mERROR : ¼­¹ö¸í(${HOST_NAME})´Â Áö¿øÇÏÁö ¾Ê½À´Ï´Ù....[0m"
+		exit 1
+		;;
+esac
+
+#---------------------------------------------------------------------
+# ÇÁ·Î±×·¥À» ½ÇÇàÇÑ´Ù.
+#
+if [ $# -gt 0 ];
+then
+	# echo "$# is OK....[$*]"
+	echo ""
+
+	for SVC_NM in $*
+	# for SVC_NM in OIRTMP5101
+	do
+		SVC_NM_LEN=`expr length "${SVC_NM}"`
+
+		echo "[32m============================ ARGS=[${SVC_NM}] ===============================[0m"
+
+		if [ ${SVC_NM_LEN} -eq 10 ];
+		then
+
+			#-------------------------------------------------
+
+			SVC_NM=`echo ${SVC_NM} | tr 'a-z' 'A-Z'`
+			SVC_CD=`expr substr ${SVC_NM} 1 3`
+			# echo "STATUS : [SVC_NM=${SVC_NM}] [SVC_CD=${SVC_CD}]"
+
+			#-------------------------------------------------
+
+			case ${HOST_NAME} in
+				#-------------------------------------------------
+				"dbizap01" | "pbizap01" | "pbizap02" )           # AP¼­¹ö
+					case ${SVC_CD} in
+						"OFS" | "OFR" )
+							#echo "STATUS : ¼­ºñ½º¸í(${SVC_NM})À» ½ÇÇàÇÕ´Ï´Ù..."
+							execute ${SVC_NM} ${SVC_CD};
+							echo "STATUS : RETURN CODE=$?"
+							;;
+						* )
+							echo "[31mERROR : <¾÷¹«°èAP>¿¡´Â ¼­ºñ½ºÄÚµå(${SVC_CD})´Â Áö¿øÇÏÁö ¾Ê½À´Ï´Ù....[0m"
+							;;
+					esac
+					;;
+				#-------------------------------------------------
+				"dfep03" | "pfep03" | "pfep04" )                 # FEP¼­¹ö
+					case ${SVC_CD} in
+						"OIS" | "OIR" | "OXS" | "OXR" | "OXA" | "OSA" | "BIS" | "BIR" | "BXS" | "BXR" | "IBN")
+							#echo "STATUS : ¼­ºñ½º¸í(${SVC_NM})À» ½ÇÇàÇÕ´Ï´Ù..."
+							execute ${SVC_NM} ${SVC_CD};
+							echo "STATUS : RETURN CODE=$?"
+							;;
+						* )
+							echo "[31mERROR : <FEP¹ðÅ·>¿¡´Â ¼­ºñ½ºÄÚµå(${SVC_CD})´Â Áö¿øÇÏÁö ¾Ê½À´Ï´Ù....[0m"
+							;;
+					esac
+					;;
+				#-------------------------------------------------
+				* )
+					echo "[31mERROR : ¼­¹ö¸í(${HOST_NAME})´Â Áö¿øÇÏÁö ¾Ê½À´Ï´Ù....[0m"
+					;;
+			esac
+		else
+			echo "[31mERROR : ¼­¹ö½º¸í(${SVC_NM})´Â Áö¿øÇÏÁö ¾Ê½À´Ï´Ù....[0m"
+		fi
+
+		echo ""
+
+	done;
+
+else
+	echo ""
+	echo "STATUS : argument count is $#...."
+	echo "USAGE : ${0} [SERVICE_NAME]....."
+	echo "       ex) ${0} OFSTMP0102 ofrTMP5101 OIRTTT0101 bxskbb0101 oirtmp0101 oiskbb0101 OXSTMP0101 BIRKBB5101 OFSKBB5101"
+fi
+
+#---------------------------------------------------------------------
+# TODO : ³ªÁß¿¡ PS_MANAGER, SMS_MANAGER, MAPPER, PARSET¸¦ Ãß°¡ÇØ¾ß ÇÔ.
+#
+
+# echo "ARGS.$*"
+# echo "ARGS_NO.$#"
+# echo "Hello...${0}"
+exit 1;
+echo "World...${0}"
+
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+######################################################################
+
+
+
+
+OBSS="OBSCOM0001"
+OBRS="OBRCOM0002"
+OFSS="OFSKBB0101 OFSKBB0102 OFSSHB0101 OFSSHB0102 OFSWRB0101 OFSWRB0102 OFSWRB0201 OFSWRB0202 OFSWRB0301 OFSWRB0302 OFSWRB0401 OFSWRB0402 OFSWRB0501 OFSWRB0502 OFSWRB0601 OFSWRB0602 OFSWRB0701 OFSWRB0702 OFSWRB0801 OFSWRB0802 OFSWRB0901 OFSWRB0902 OFSWRB1001 OFSWRB1002 OFSTKB0101 OFSTKB0102 OFSEXB0101 OFSEXB0102 OFSEXB0201 OFSEXB0202 OFSHNB0101 OFSHNB0102 OFSHNB0201 OFSHNB0202 OFSHNB0301 OFSHNB0302 OFSPSB0101 OFSPSB0102 OFSPOS0101 OFSPOS0102 OFSNHB0101 OFSNHB0102 OFSNHB0201 OFSNHB0202 OFSNHB0301 OFSNHB0302 OFSGUB0101 OFSGUB0102 OFSSCB0101 OFSSCB0102 OFSSHC0101 OFSSHC0102 OFSSHC0201 OFSSHC0202 OFSSHC0301 OFSSHC0302 OFSSHC0401 OFSSHC0402 OFSHDC0101 OFSHDC0102 OFSHDC0201 OFSHDC0202 OFSHDC0301 OFSHDC0302 OFSHDC0401 OFSHDC0402 OFSLTC0101 OFSLTC0102 OFSLTC0201 OFSLTC0202 OFSSSC0101 OFSSSC0102 OFSCTC0101 OFSCTC0102 OFSDHI0101 OFSDHI0102 OFSDHI0201 OFSDHI0202 OFSDHI0301 OFSDHI0302 OFSKIS0101 OFSKIS0102 OFSKFT0101 OFSKFT0102 OFSKFT0201 OFSKFT0202 OFSKFT0301 OFSKFT0302 OFSKFT0401 OFSKFT0402 OFSKFT0501 OFSKFT0502 OFSKFT0601 OFSKFT0602 OFSKFT0701 OFSKFT0702 OFSKFT0801 OFSKFT0802 OFSNCE0101 OFSNCE0102 OFSHNT0101 OFSHNT0102 OFSGBK0101 OFSGBK0102 OFSHYS0101 OFSHYS0102 OFSCHO0101 OFSCHO0102 OFSKBK0101 OFSKBK0102 OFSSSN0101 OFSSSN0102 OFSKSN0101 OFSKSN0102 OFSKSN0201 OFSKSN0202 OFSLGU0101 OFSLGU0102"
+OFRS="OFRKBB0101 OFRKBB0102 OFRSHB0101 OFRSHB0102 OFRWRB0101 OFRWRB0102 OFRWRB0201 OFRWRB0202 OFRWRB0301 OFRWRB0302 OFRWRB0401 OFRWRB0402 OFRWRB0501 OFRWRB0502 OFRWRB0601 OFRWRB0602 OFRWRB0701 OFRWRB0702 OFRWRB0801 OFRWRB0802 OFRWRB0901 OFRWRB0902 OFRWRB1001 OFRWRB1002 OFRTKB0101 OFRTKB0102 OFREXB0101 OFREXB0102 OFREXB0201 OFREXB0202 OFRHNB0101 OFRHNB0102 OFRHNB0201 OFRHNB0202 OFRHNB0301 OFRHNB0302 OFRPSB0101 OFRPSB0102 OFRPOS0101 OFRPOS0102 OFRNHB0101 OFRNHB0102 OFRNHB0201 OFRNHB0202 OFRNHB0301 OFRNHB0302 OFRGUB0101 OFRGUB0102 OFRSCB0101 OFRSCB0102 OFRSHC0101 OFRSHC0102 OFRSHC0201 OFRSHC0202 OFRSHC0301 OFRSHC0302 OFRSHC0401 OFRSHC0402 OFRHDC0101 OFRHDC0102 OFRHDC0201 OFRHDC0202 OFRHDC0301 OFRHDC0302 OFRHDC0401 OFRHDC0402 OFRLTC0101 OFRLTC0102 OFRLTC0201 OFRLTC0202 OFRSSC0101 OFRSSC0102 OFRCTC0101 OFRCTC0102 OFRDHI0101 OFRDHI0102 OFRDHI0201 OFRDHI0202 OFRDHI0301 OFRDHI0302 OFRKIS0101 OFRKIS0102 OFRKFT0101 OFRKFT0102 OFRKFT0201 OFRKFT0202 OFRKFT0301 OFRKFT0302 OFRKFT0401 OFRKFT0402 OFRKFT0501 OFRKFT0502 OFRKFT0601 OFRKFT0602 OFRKFT0701 OFRKFT0702 OFRKFT0801 OFRKFT0802 OFRNCE0101 OFRNCE0102 OFRHNT0101 OFRHNT0102 OFRGBK0101 OFRGBK0102 OFRHYS0101 OFRHYS0102 OFRCHO0101 OFRCHO0102 OFRKBK0101 OFRKBK0102 OFRSSN0101 OFRSSN0102 OFRKSN0101 OFRKSN0102 OFRKSN0201 OFRKSN0202 OFRLGU0101 OFRLGU0102"
+BFSS="OFSSHC5101 OFSSHC5102 OFSHDC5101 OFSHDC5102 OFSLTC5101 OFSLTC5102 OFSSSC5101 OFSSSC5102 OFSCTC5101 OFSCTC5102                                                                   OFSKFT5101 OFSKFT5102 OFSKFT5201 OFSKFT5202 OFSSSN5101 OFSSSN5102 OFSKSN5101 OFSKSN5102"
+BFRS="OFRSHC5101 OFRSHC5102 OFRHDC5101 OFRHDC5102 OFRLTC5101 OFRLTC5102 OFRSSC5101 OFRSSC5102 OFRCTC5101 OFRCTC5102 OFRNHC5101 OFRNHC5102 OFRBCC5101 OFRBCC5102 OFRKBC5101 OFRKBC5102 OFRKFT5101 OFRKFT5102 OFRKFT5201 OFRKFT5202 OFRSSN5101 OFRSSN5102 OFRKSN5101 OFRKSN5102"
+
+OISS="OISKBB0101 OISSHB0101 OISWRB0101 OISWRB0201 OISWRB0301 OISWRB0401 OISWRB0501 OISWRB0601 OISWRB0701 OISWRB0801 OISWRB0901 OISWRB1001 OISTKB0101 OISEXB0101 OISEXB0201 OISHNB0101 OISHNB0201 OISHNB0301 OISPSB0101 OISPOS0101 OISNHB0101 OISNHB0201 OISNHB0301 OISGUB0101                       OISSCB0101 OISSHC0101 OISSHC0201 OISSHC0301 OISSHC0401 OISHDC0101 OISHDC0201 OISHDC0301 OISHDC0401 OISLTC0101 OISLTC0201 OISSSC0101 OISCTC0101 OISDHI0101 OISDHI0201 OISDHI0301 OISKIS0101 OISKFT0101 OISKFT0201 OISKFT0301 OISKFT0401 OISKFT0501 OISKFT0601 OISKFT0701 OISKFT0801 OISKFT0901 OISLOT0101 OISHNT0101 OISGBK0101 OISHYS0101 OISCHO0101 OISKBK0101 OISSSN0101 OISKSN0101 OISKSN0201 OISLGU0101"
+OIRS="OIRKBB0101 OIRSHB0101 OIRWRB0101 OIRWRB0201 OIRWRB0301 OIRWRB0401 OIRWRB0501 OIRWRB0601 OIRWRB0701 OIRWRB0801 OIRWRB0901 OIRWRB1001 OIRTKB0101 OIREXB0101 OIREXB0201 OIRHNB0101 OIRHNB0201 OIRHNB0301 OIRPSB0101 OIRPOS0101 OIRNHB0101 OIRNHB0201 OIRNHB0301 OIRGUB0101                       OIRSCB0101 OIRSHC0101 OIRSHC0201 OIRSHC0301 OIRSHC0401 OIRHDC0101 OIRHDC0201 OIRHDC0301 OIRHDC0401 OIRLTC0101 OIRLTC0201 OIRSSC0101 OIRCTC0101 OIRDHI0101 OIRDHI0201 OIRDHI0301 OIRKIS0101 OIRKFT0101 OIRKFT0201 OIRKFT0301 OIRKFT0401 OIRKFT0501 OIRKFT0601 OIRKFT0701 OIRKFT0801 OIRKFT0901 OIRLOT0101 OIRHNT0101 OIRGBK0101 OIRHYS0101 OIRCHO0101 OIRKBK0101 OIRSSN0101 OIRKSN0101 OIRKSN0201 OIRLGU0101"
+OXSS="OXSKBB0101 OXSSHB0101 OXSWRB0101 OXSWRB0201 OXSWRB0301 OXSWRB0401 OXSWRB0501 OXSWRB0601 OXSWRB0701 OXSWRB0801                       OXSTKB0101 OXSEXB0101 OXSEXB0201 OXSHNB0101            OXSHNB0301 OXSPSB0101            OXSNHB0101 OXSNHB0201 OXSNHB0301 OXSGUB0101 OXSGUB0102 OXSGUB0103                                                                                                                                                OXSDHI0101 OXSDHI0201 OXSDHI0301            OXSKFT0101 OXSKFT0201 OXSKFT0301 OXSKFT0401                                  OXSKFT0801            OXSLOT0101 OXSHNT0101 OXSGBK0101 OXSHYS0101 OXSCHO0101 OXSKBK0101 OXSSSN0101 OXSKSN0101 OXSKSN0201"
+OXRS="OXRKBB0101 OXRSHB0101 OXRWRB0101 OXRWRB0201 OXRWRB0301 OXRWRB0401 OXRWRB0501 OXRWRB0601 OXRWRB0701 OXRWRB0801                       OXRTKB0101 OXREXB0101 OXREXB0201 OXRHNB0101            OXRHNB0301 OXRPSB0101            OXRNHB0101 OXRNHB0201 OXRNHB0301 OXRGUB0101 OXRGUB0102 OXRGUB0103                                                                                                                                                OXRDHI0101 OXRDHI0201 OXRDHI0301            OXRKFT0101 OXRKFT0201 OXRKFT0301 OXRKFT0401                                  OXRKFT0801            OXRLOT0101 OXRHNT0101 OXRGBK0101 OXRHYS0101 OXRCHO0101 OXRKBK0101 OXRSSN0101 OXRKSN0101 OXRKSN0201"
+OXAS="OXAKFT0501 OXAKFT0601 OXAKFT0701 OXAKFT0901 OXASCB0101 OXAWRB0901 OXAWRB1001 OXAKIS0101 OXASHC0101 OXASHC0201 OXASHC0301 OXASHC0401 OXALTC0101 OXALTC0201 OXACTC0101 OXALGU0101 OXASSC0101 OXAHNB0201 OXAHDC0101 OXAHDC0201 OXAHDC0301 OXAHDC0401 OXAPOS0101"
+OSAS="OSAKBB0101 OSASHB0101 OSAWRB0101 OSAWRB0201 OSAWRB0301 OSAWRB0401 OSAWRB0501 OSAWRB0601 OSAWRB0701 OSAWRB0801 OSAWRB0901 OSAWRB1001 OSATKB0101 OSAEXB0101 OSAEXB0201 OSAHNB0101 OSAHNB0201 OSAHNB0301 OSAPSB0101 OSAPOS0101 OSANHB0101 OSANHB0201 OSANHB0301 OSAGUB0101                       OSASCB0101 OSASHC0101 OSASHC0201 OSASHC0301 OSASHC0401 OSAHDC0101 OSAHDC0201 OSAHDC0301 OSAHDC0401 OSALTC0101 OSALTC0201 OSASSC0101 OSACTC0101 OSADHI0101 OSADHI0201 OSADHI0301 OSAKIS0101 OSAKFT0101 OSAKFT0201 OSAKFT0301 OSAKFT0401 OSAKFT0501 OSAKFT0601 OSAKFT0701 OSAKFT0801 OSAKFT0901 OSALOT0101 OSAHNT0101 OSAGBK0101 OSAHYS0101 OSACHO0101 OSAKBK0101 OSASSN0101 OSAKSN0101 OSAKSN0201 OSALGU0101"
+
+BISS="OISSHC5101 OISHDC5101 OISLTC5101 OISSSC5101 OISCTC5101 OISNHC5101 OISBCC5101 OISKBC5101 OISSSC5201 OISKFT5101 OISKFT5201 OISKFT5301 OISKFT5401 OISKFT5501 OISSSN5101 OISKSN5101"
+BIRS="OIRSHC5101 OIRHDC5101 OIRLTC5101 OIRSSC5101 OIRCTC5101                                             OIRKFT5101 OIRKFT5201 OIRKFT5301 OIRKFT5401 OIRKFT5501 OIRSSN5101 OIRKSN5101"
+BXSS="BXSSHC5101 BXSHDC5101 BXSLTC5101 BXSSSC5101 BXSCTC5101                                             BXSKFT5101 BXSKFT5201 BXSKFT5301 BXSKFT5401 BXSKFT5501 BXSSSN5101 BXSKSN5101"
+BXRS="BXRSHC5101 BXRHDC5101 BXRLTC5101 BXRSSC5101 BXRCTC5101 BXRNHC5101 BXRBCC5101 BXRKBC5101 BXRSSC5201 BXRKFT5101 BXRKFT5201 BXRKFT5301 BXRKFT5401 BXRKFT5501 BXRSSN5101 BXRKSN5101"
+BXAS=""
+
+ARG_LEN=`expr length "$1"`
+
+okkill()
+{
+	pid=`ps -ef | grep $1 | grep -v vi | grep -v tail | grep -v grep | grep -v xrun | grep -v xend | awk '{ print $2 }'`
+
+	if [ "$pid" = "" ];
+	then
+		echo "$1 is not running..."
+	else
+		echo "#--------------------------------------------------------------------#"
+		ps -ef | grep $1 | grep -v vi | grep -v tail | grep -v grep | grep -v xrun | grep -v xend
+		ps -ef | grep $1 | grep -v vi | grep -v tail | grep -v grep | grep -v xrun | grep -v xend | awk '{print $2}' | xargs kill
+		echo "$1 stopped ..."
+		echo "#--------------------------------------------------------------------#"
+		sleep 1
+	fi
+}
+
+case $ARG_LEN in
+	3)  case $1 in
+			"all" ) ${0} oi;
+					${0} bi;
+					${0} ox;
+					${0} bx;
+					${0} ss;
+					${0} pm; exit;;
+			"ofs" ) PROC_NAMES=$OFSS;;
+			"ofr" ) PROC_NAMES=$OFRS;;
+			"bfs" ) PROC_NAMES=$BFSS;;
+			"bfr" ) PROC_NAMES=$BFRS;;
+			"obs" ) PROC_NAMES=$OBSS;;
+			"obr" ) PROC_NAMES=$OBRS;;
+			"bbs" ) PROC_NAMES=$BBSS;;
+			"bbr" ) PROC_NAMES=$BBRS;;
+
+			"ois" ) PROC_NAMES=$OISS;;
+			"oir" ) PROC_NAMES=$OIRS;;
+			"bis" ) PROC_NAMES=$BISS;;
+			"bir" ) PROC_NAMES=$BIRS;;
+			"oxs" ) PROC_NAMES=$OXSS;;
+			"oxr" ) PROC_NAMES=$OXRS;;
+			"oxa" ) PROC_NAMES=$OXAS;;
+			"bxs" ) PROC_NAMES=$BXSS;;
+			"bxr" ) PROC_NAMES=$BXRS;;
+			"bxa" ) PROC_NAMES=$BXAS;;
+			"osa" ) PROC_NAMES=$OSAS;;
+			 * )    echo "***** ÇÁ·Î¼¼½º ½ÇÇà ¿À·ù[${1}] ... È®ÀÎ ¹Ù¶÷ *****"; exit;;
+		esac
+
+		for PROC_NAME in $PROC_NAMES
+		do
+			${0} $PROC_NAME;
+		done;
+
+		exit;;
+
+	2)  case $1 in
+			"pm"  ) ${0} PS_MANAGER; exit;;
+			"ss"  ) ${0} SMS_SENDER; exit;;
+			"of"  ) PROC_NAMES="$OFSS $OFRS";;
+			"bf"  ) PROC_NAMES="$BFSS $BFRS";;
+			"ob"  ) PROC_NAMES="$OBSS $OBRS";;
+			"bb"  ) PROC_NAMES="$BBSS $BBRS";;
+			"oi"  ) PROC_NAMES="$OISS $OIRS";;
+			"bi"  ) PROC_NAMES="$BISS $BIRS";;
+			"ox"  ) PROC_NAMES="$OXSS $OXRS $OXAS";;
+			"bx"  ) PROC_NAMES="$BXSS $BXRS $BXAS";;
+			"os"  ) PROC_NAMES="$OSAS";;
+			 * )    echo "***** ÇÁ·Î¼¼½º ½ÇÇà ¿À·ù[${1}] ... È®ÀÎ ¹Ù¶÷ *****"; exit;;
+		esac
+
+		for PROC_NAME in $PROC_NAMES
+		do
+			${0} $PROC_NAME;
+		done;
+
+		exit;;
+
+	5)  FEP_ID=`echo $1 | tr 'a-z' 'A-Z'`
+
+		if [ `expr substr $1 4 2` -lt 50 ]
+		then
+			for PROC_NAME in $OISS
+			do
+				if [ `expr substr $PROC_NAME 4 5` = $FEP_ID ]; then ${0} $PROC_NAME; fi
+			done
+			for PROC_NAME in $OIRS
+			do
+				if [ `expr substr $PROC_NAME 4 5` = $FEP_ID ]; then ${0} $PROC_NAME; fi
+			done
+			for PROC_NAME in $OXSS
+			do
+				if [ `expr substr $PROC_NAME 4 5` = $FEP_ID ]; then ${0} $PROC_NAME; fi
+			done
+			for PROC_NAME in $OXRS
+			do
+				if [ `expr substr $PROC_NAME 4 5` = $FEP_ID ]; then ${0} $PROC_NAME; fi
+			done
+			for PROC_NAME in $OXAS
+			do
+				if [ `expr substr $PROC_NAME 4 5` = $FEP_ID ]; then ${0} $PROC_NAME; fi
+			done
+		else
+			for PROC_NAME in $BISS
+			do
+				if [ `expr substr $PROC_NAME 4 5` = $FEP_ID ]; then ${0} $PROC_NAME; fi
+			done
+			for PROC_NAME in $BIRS
+			do
+				if [ `expr substr $PROC_NAME 4 5` = $FEP_ID ]; then ${0} $PROC_NAME; fi
+			done
+			for PROC_NAME in $BXSS
+			do
+				if [ `expr substr $PROC_NAME 4 5` = $FEP_ID ]; then ${0} $PROC_NAME; fi
+			done
+			for PROC_NAME in $BXRS
+			do
+				if [ `expr substr $PROC_NAME 4 5` = $FEP_ID ]; then ${0} $PROC_NAME; fi
+			done
+			for PROC_NAME in $BXAS
+			do
+				if [ `expr substr $PROC_NAME 4 5` = $FEP_ID ]; then ${0} $PROC_NAME; fi
+			done
+		fi
+		exit;;
+	8)  PROC_BSCD=`echo $1 | tr 'a-z' 'A-Z'`
+
+		if [ `expr substr $1 7 2` -lt 50 ]
+		then
+			for PROC_NAME in $OISS
+			do
+				if [ `expr substr $PROC_NAME 1 8` = $PROC_BSCD ]; then ${0} $PROC_NAME; fi
+			done
+			for PROC_NAME in $OIRS
+			do
+				if [ `expr substr $PROC_NAME 1 8` = $PROC_BSCD ]; then ${0} $PROC_NAME; fi
+			done
+			for PROC_NAME in $OXSS
+			do
+				if [ `expr substr $PROC_NAME 1 8` = $PROC_BSCD ]; then ${0} $PROC_NAME; fi
+			done
+			for PROC_NAME in $OXRS
+			do
+				if [ `expr substr $PROC_NAME 1 8` = $PROC_BSCD ]; then ${0} $PROC_NAME; fi
+			done
+			for PROC_NAME in $OXAS
+			do
+				if [ `expr substr $PROC_NAME 1 8` = $PROC_BSCD ]; then ${0} $PROC_NAME; fi
+			done
+			for PROC_NAME in $OSAS
+			do
+				if [ `expr substr $PROC_NAME 1 8` = $PROC_BSCD ]; then ${0} $PROC_NAME; fi
+			done
+		else
+			for PROC_NAME in $BISS
+			do
+				if [ `expr substr $PROC_NAME 1 8` = $PROC_BSCD ]; then ${0} $PROC_NAME; fi
+			done
+			for PROC_NAME in $BIRS
+			do
+				if [ `expr substr $PROC_NAME 1 8` = $PROC_BSCD ]; then ${0} $PROC_NAME; fi
+			done
+			for PROC_NAME in $BXSS
+			do
+				if [ `expr substr $PROC_NAME 1 8` = $PROC_BSCD ]; then ${0} $PROC_NAME; fi
+			done
+			for PROC_NAME in $BXRS
+			do
+				if [ `expr substr $PROC_NAME 1 8` = $PROC_BSCD ]; then ${0} $PROC_NAME; fi
+			done
+			for PROC_NAME in $BXAS
+			do
+				if [ `expr substr $PROC_NAME 1 8` = $PROC_BSCD ]; then ${0} $PROC_NAME; fi
+			done
+		fi
+		exit;;
+	10) PROC_NAME=`echo $1 | tr 'a-z' 'A-Z'`;;
+	* ) echo "***** ÇÁ·Î¼¼½º ½ÇÇà ¿À·ù[${1}] ... È®ÀÎ ¹Ù¶÷ *****";;
+esac
+
+if [ `expr substr $1 7 2` -lt 50 ]
+then
+	PROC_TYPE=`expr substr $PROC_NAME 1 3`;
+else
+	PROC_TYPE=B`expr substr $PROC_NAME 2 2`;
+fi
+
+echo "################################################################################"
+echo "  START $PROC_NAME (PROCTYPE: $PROC_TYPE) "
+echo "################################################################################"
+
+case $PROC_TYPE in
+	"PS_" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/ps_manager $PROC_NAME;;
+	"SMS" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/sms_sender $PROC_NAME;;
+	"OFS" ) exit; okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/ofscom0000 $PROC_NAME;;
+	"OFR" ) exit; okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/ofrcom0000 $PROC_NAME;;
+	"OBS" ) exit; okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/obscom0000 $PROC_NAME;;
+	"OBR" ) exit; okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/obrcom0000 $PROC_NAME;;
+	"BFS" ) exit; okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bfscom0000 $PROC_NAME;;
+	"BFR" ) exit; okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bfrcom0000 $PROC_NAME;;
+	"BBS" ) exit; okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/obscom0000 $PROC_NAME;;
+	"BBR" ) exit; okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/obrcom0000 $PROC_NAME;;
+	"BIS" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/biscom0000 $PROC_NAME;;
+	"BIR" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bircom0000 $PROC_NAME;;
+	"OIS" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oiscom0000 $PROC_NAME;;
+	"OIR" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oircom0000 $PROC_NAME;;
+	# "OXS" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxacom0000 $PROC_NAME;;
+	"OXS" ) case $PROC_NAME in
+				"OXSNHB0101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxanhb0000 $PROC_NAME;;
+				"OXSNHB0201" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxanhb0000 $PROC_NAME;;
+				"OXSNHB0301" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxanhb0000 $PROC_NAME;;
+				"OXSKBB0101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxanhb0000 $PROC_NAME;;
+
+			  # "OXSKFT0501" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxakft0000 $PROC_NAME;;
+			  # "OXSKFT0601" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxakft0000 $PROC_NAME;;
+				"OXSPSB0101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxanhb0000 $PROC_NAME;;
+				*            ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxacom0000 $PROC_NAME;;
+			esac;;
+	# "OXR" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxacom0000 $PROC_NAME;;
+	"OXR" ) case $PROC_NAME in
+				"OXRNHB0101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxanhb0000 $PROC_NAME;;
+				"OXRNHB0201" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxanhb0000 $PROC_NAME;;
+				"OXRNHB0301" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxanhb0000 $PROC_NAME;;
+				"OXRKBB0101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxanhb0000 $PROC_NAME;;
+
+				# KFT0/06 Å×½ºÆ®¿ë
+			   #"OXRKFT0501" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxakft0000 $PROC_NAME;;
+				#"OXRKFT0601" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxakft0000 $PROC_NAME;;
+				"OXRPSB0101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxanhb0000 $PROC_NAME;;
+				*            ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxacom0000 $PROC_NAME;;
+			esac;;
+	"OXA" ) case $PROC_NAME in
+				# "OXASCB0101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxascb0000 $PROC_NAME;;
+				"OXASCB0101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxascb0001 $PROC_NAME;;
+				"OXASHC0101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxanhb0000 $PROC_NAME;;
+				 # 2013/06/27  ¼öÁ¤ by ÃÖÁ¾Çö
+				"OXASHC0201" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxanhb0000 $PROC_NAME;;
+				"OXASHC0301" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxanhb0000 $PROC_NAME;;
+				"OXASHC0401" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxanhb0000 $PROC_NAME;;
+				"OXATAT0101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxatst0000 $PROC_NAME;;
+
+				# ¸ð´ÏÅÍ¸µ¿ë
+				#"OXATAT0101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxakft0000 $PROC_NAME;;
+				#"OXAKFT0501" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxakft0000 $PROC_NAME;;
+				#"OXAKFT1201" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxakft0000 $PROC_NAME;;
+				*            ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/oxacom0000 $PROC_NAME;;
+
+
+			esac;;
+	"OSA" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/simcom0000 $PROC_NAME;;
+	"OTA" ) okkill OSA`expr substr $PROC_NAME 4 7`; $DUMMY $HOME_DIR/bin/osacom0000 OSA`expr substr $PROC_NAME 4 7`;;
+	"BXS" ) case $PROC_NAME in
+				"BXSKFT5101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxakft0000 $PROC_NAME;;
+				"BXSKFT5201" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxakft0000 $PROC_NAME;;
+				"BXSKFT5301" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxakft0001 $PROC_NAME;;
+				"BXSKFT5401" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxakft0001 $PROC_NAME;;
+				"BXSKFT5501" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxakft0001 $PROC_NAME;;
+				"BXSSHC5101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxashc0000 $PROC_NAME;;
+				"BXSHDC5101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxahdc0000 $PROC_NAME;;
+				"BXSLTC5101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxaltc0000 $PROC_NAME;;
+				"BXSTMP5101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxatmp0000 $PROC_NAME;;
+			esac;;
+	"BXR" ) case $PROC_NAME in
+				"BXRKFT5101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxakft0000 $PROC_NAME;;
+				"BXRKFT5201" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxakft0000 $PROC_NAME;;
+				"BXRKFT5301" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxakft0001 $PROC_NAME;;
+				"BXRKFT5401" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxakft0001 $PROC_NAME;;
+				"BXRKFT5501" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxakft0001 $PROC_NAME;;
+				"BXRSHC5101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxashc0000 $PROC_NAME;;
+				"BXRHDC5101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxahdc0000 $PROC_NAME;;
+				"BXRLTC5101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxaltc0000 $PROC_NAME;;
+				"BXRCTC5101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxactc0000 $PROC_NAME;;
+				"BXRSSC5101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxassc0000 $PROC_NAME;;
+				"BXRNHC5101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxakft0000 $PROC_NAME;;
+				"BXRKBC5101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxakft0000 $PROC_NAME;;
+				"BXRBCC5101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxakft0000 $PROC_NAME;;
+				"BXRSSC5201" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxakft0000 $PROC_NAME;;
+				"BXRSSN5101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxassn0000 $PROC_NAME;;
+				"BXRKSN5101" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxaksn0000 $PROC_NAME;;
+				"BXRTMP5201" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxatmp0000 $PROC_NAME;;
+			esac;;
+	"BXA" ) okkill $PROC_NAME; $DUMMY $HOME_DIR/bin/bxacom0000 $PROC_NAME;;
+	 * )    echo "***** ÇÁ·Î¼¼½º ½ÇÇà ¿À·ù ... È®ÀÎ ¹Ù¶÷ *****";;
+esac
+
+exit;
