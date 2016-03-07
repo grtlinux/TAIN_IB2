@@ -3,15 +3,15 @@
 Makefile
 README.md
 
- 1. Biz.c      :
- 2. CSock.c    :
- 3. Cfg.c      :
- 4. Err.c      :
- 5. Exec.c     :
- 6. FQ2.c      :
- 7. FQ3.c      :
- 8. Flck.c     :
- 9. HWSeed.c   :
+1. Biz.c      :
+2. CSock.c    :
+3. Cfg.c      :
+4. Err.c      :
+5. Exec.c     :
+6. FQ2.c      :
+7. FQ3.c      :
+8. Flck.c     :
+9. HWSeed.c   :
 10. IBnet.c    :
 11. KISeed.c   :
 12. Line.c     :
