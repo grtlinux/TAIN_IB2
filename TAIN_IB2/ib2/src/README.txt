@@ -1,11 +1,5 @@
 # IB2
 
-AP:ofs ---------> FEP:oir -> FEP:oxs ----------> EXT
-AP:ofr <--------- FEP:ois <- FEP:oxr <---------- EXT
-
-Makefile
-README.md
-
 1. Biz.c      : /hw01/ibridge/ib2/cfg/biz.org, /hw01/ibridge/ib2/cfg/biz2.org 파일을 읽는다.
 2. 
 24. Sock.c     : Socket
@@ -92,6 +86,21 @@ README.md
 76. oxsmeg2.c  :
 
 ##################################################################################################
+
+AP:ofs ---------> FEP:oir -> FEP:oxs ----------> EXT
+AP:ofr <--------- FEP:ois <- FEP:oxr <---------- EXT
+
+ofscom2
+ofrcom2
+
+oiscom2
+oircom2
+
+oxscom2
+oxrcom2
+osacom
+
+##################################################################################################
 [OFSKFT0201]
 	DESCRIPTION      = 금융결제원  CD/ATM
 	OBSERVATION_FLAG = Y
@@ -165,6 +174,19 @@ README.md
 	RUNNING_TIME     = 0~00:25~23:58 | 1~00:25~23:58 | 2~00:25~23:58 | 3~00:25~23:58 | 4~00:25~23:58 | 5~00:25~23:58 | 6~00:25~23:58
 
 ##################################################################################################
+
+AP:bfs ---------> FEP:bir -> FEP:bxs ----------> EXT
+AP:bfr <--------- FEP:bis <- FEP:bxr <---------- EXT
+
+bfscom2
+bfrcom2
+
+biscom2
+bircom2
+
+bxskft1
+bxrkft1
+bxacom2
 
 ##################################################################################################
 [OFSKFT5101]
