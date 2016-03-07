@@ -1,10 +1,19 @@
 # IB2
 
+AP:ofs ---------> FEP:oir -> FEP:oxs ----------> EXT
+AP:ofr <--------- FEP:ois <- FEP:oxr <---------- EXT
+
 Makefile
 README.md
 
-1. Biz.c      : /hw01/ibridge/ib2/cfg/biz.org, /hw01/ibridge/ib2/cfg/biz2.org ÆÄÀÏÀ» ÀÐ´Â´Ù.
-2. CSock.c    :
+1. Biz.c      : /hw01/ibridge/ib2/cfg/biz.org, /hw01/ibridge/ib2/cfg/biz2.org íŒŒì¼ì„ ì½ëŠ”ë‹¤.
+2. 
+24. Sock.c     : Socket
+2. CSock.c    : Client Socket
+20. SSock.c    : Server Socket
+15. MSock.c    : Multi Socket
+29. X25.c      : X25
+30. 
 3. Cfg.c      :
 4. Err.c      :
 5. Exec.c     :
@@ -17,25 +26,30 @@ README.md
 12. Line.c     :
 13. Log.c      :
 14. MCfg.c     :
-15. MSock.c    :
 16. Mmap.c     :
 17. Passwd.c   :
 18. Poll.c     :
 19. Rand.c     :
-20. SSock.c    :
 21. Seq.c      :
 22. Sig.c      :
 23. Sinf.c     :
-24. Sock.c     :
 25. Time.c     :
 26. Ums.c      :
 27. Util.c     :
 28. Var.c      :
-29. X25.c      :
+
+50. fepstat2.c :
+51. log_del.c  :
+52. log_sec.c  :
+53. log_zip.c  :
+54. maachk2.c  :
+77. ps_man.c   :
+
 30. bfrcom2.c  :
 31. bfscom2.c  :
 32. bircom2.c  :
 33. biscom2.c  :
+34. 
 34. bxrctc.c   :
 35. bxrhdc.c   :
 36. bxrkft1.c  :
@@ -45,6 +59,7 @@ README.md
 40. bxrltc.c   :
 41. bxrshc.c   :
 42. bxrssn.c   :
+
 43. bxshdc.c   :
 44. bxskft1.c  :
 45. bxskft2.c  :
@@ -52,11 +67,7 @@ README.md
 47. bxsksn.c   :
 48. bxsshc.c   :
 49. bxsssn.c   :
-50. fepstat2.c :
-51. log_del.c  :
-52. log_sec.c  :
-53. log_zip.c  :
-54. maachk2.c  :
+
 55. ofrcho2.c  :
 56. ofrcom2.c  :
 57. ofrkft2.c  :
@@ -79,4 +90,5 @@ README.md
 74. oxscom2.c  :
 75. oxsdhi2.c  :
 76. oxsmeg2.c  :
-77. ps_man.c   :
+
+
