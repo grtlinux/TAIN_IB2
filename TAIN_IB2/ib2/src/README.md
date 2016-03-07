@@ -3,7 +3,7 @@
 Makefile
 README.md
 
-1. Biz.c      :
+1. Biz.c      : /hw01/ibridge/ib2/cfg/biz.org, /hw01/ibridge/ib2/cfg/biz2.org 파일을 읽는다.
 2. CSock.c    :
 3. Cfg.c      :
 4. Err.c      :
