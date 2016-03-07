@@ -91,4 +91,143 @@ README.md
 75. oxsdhi2.c  :
 76. oxsmeg2.c  :
 
+##################################################################################################
+[OFSKFT0201]
+	DESCRIPTION      = 금융결제원  CD/ATM
+	OBSERVATION_FLAG = Y
+	#RUN_SCRIPT      = /hw01/ibridge/shl/xrun OFSKFT0201
+	RUN_SCRIPT       = /hw01/ibridge/ib2/shl/ibrun2 OFSKFT0201
+	RUNNING_SERVER   = AP
+	RUNNING_PROCESS  = /hw01/ibridge/ib2/bin/ofscom2
+	RUNNING_TIME     = 0~00:25~23:58 | 1~00:25~23:58 | 2~00:25~23:58 | 3~00:25~23:58 | 4~00:25~23:58 | 5~00:25~23:58 | 6~00:25~23:58
+
+[OFSKFT0202]
+	DESCRIPTION      = 금융결제원  CD/ATM
+	OBSERVATION_FLAG = N
+	#RUN_SCRIPT      = /hw01/ibridge/shl/xrun OFSKFT0202
+	RUN_SCRIPT       = /hw01/ibridge/ib2/shl/ibrun2 OFSKFT0202
+	RUNNING_SERVER   = AP
+	RUNNING_PROCESS  = /hw01/ibridge/ib2/bin/ofscom2
+	RUNNING_TIME     = 0~00:25~23:58 | 1~00:25~23:58 | 2~00:25~23:58 | 3~00:25~23:58 | 4~00:25~23:58 | 5~00:25~23:58 | 6~00:25~23:58
+
+[OFRKFT0201]
+	DESCRIPTION      = 금융결제원  CD/ATM
+	OBSERVATION_FLAG = Y
+	#RUN_SCRIPT      = /hw01/ibridge/shl/xrun OFRKFT0201
+	RUN_SCRIPT       = /hw01/ibridge/ib2/shl/ibrun2 OFRKFT0201
+	RUNNING_SERVER   = AP
+	RUNNING_PROCESS  = /hw01/ibridge/ib2/bin/ofrcom2
+	RUNNING_TIME     = 0~00:25~23:58 | 1~00:25~23:58 | 2~00:25~23:58 | 3~00:25~23:58 | 4~00:25~23:58 | 5~00:25~23:58 | 6~00:25~23:58
+
+[OISKFT0201]
+	DESCRIPTION      = 금융결제원  CD/ATM
+	OBSERVATION_FLAG = Y
+	#RUN_SCRIPT      = /hw01/ibridge/shl/xrun OISKFT0201
+	RUN_SCRIPT       = /hw01/ibridge/ib2/shl/ibrun2 OISKFT0201
+	RUNNING_SERVER   = FEP
+	RUNNING_PROCESS  = /hw01/ibridge/ib2/bin/oiscom2
+	RUNNING_TIME     = 0~00:25~23:58 | 1~00:25~23:58 | 2~00:25~23:58 | 3~00:25~23:58 | 4~00:25~23:58 | 5~00:25~23:58 | 6~00:25~23:58
+
+[OIRKFT0201]
+	DESCRIPTION      = 금융결제원  CD/ATM
+	OBSERVATION_FLAG = Y
+	#RUN_SCRIPT      = /hw01/ibridge/shl/xrun OIRKFT0201
+	RUN_SCRIPT       = /hw01/ibridge/ib2/shl/ibrun2 OIRKFT0201
+	RUNNING_SERVER   = FEP
+	RUNNING_PROCESS  = /hw01/ibridge/ib2/bin/oircom2
+	RUNNING_TIME     = 0~00:25~23:58 | 1~00:25~23:58 | 2~00:25~23:58 | 3~00:25~23:58 | 4~00:25~23:58 | 5~00:25~23:58 | 6~00:25~23:58
+
+[OXSKFT0201]
+	DESCRIPTION      = 금융결제원  CD/ATM
+	OBSERVATION_FLAG = Y
+	#RUN_SCRIPT      = /hw01/ibridge/shl/xrun OXSKFT0201
+	RUN_SCRIPT       = /hw01/ibridge/ib2/shl/ibrun2 OXSKFT0201
+	RUNNING_SERVER   = FEP
+	RUNNING_PROCESS  = /hw01/ibridge/ib2/bin/oxscom2
+	RUNNING_TIME     = 0~00:25~23:58 | 1~00:25~23:58 | 2~00:25~23:58 | 3~00:25~23:58 | 4~00:25~23:58 | 5~00:25~23:58 | 6~00:25~23:58
+
+[OXRKFT0201]
+	DESCRIPTION      = 금융결제원  CD/ATM
+	OBSERVATION_FLAG = Y
+	#RUN_SCRIPT      = /hw01/ibridge/shl/xrun OXRKFT0201
+	RUN_SCRIPT       = /hw01/ibridge/ib2/shl/ibrun2 OXRKFT0201
+	RUNNING_SERVER   = FEP
+	RUNNING_PROCESS  = /hw01/ibridge/ib2/bin/oxrcom2
+	RUNNING_TIME     = 0~00:25~23:58 | 1~00:25~23:58 | 2~00:25~23:58 | 3~00:25~23:58 | 4~00:25~23:58 | 5~00:25~23:58 | 6~00:25~23:58
+
+[OSAKFT0201]
+	DESCRIPTION      = 금융결제원  CD/ATM
+	OBSERVATION_FLAG = N
+	#RUN_SCRIPT      = /hw01/ibridge/shl/xrun OSAKFT0201
+	RUN_SCRIPT       = /hw01/ibridge/ib2/shl/ibrun2 OSAKFT0201
+	RUNNING_SERVER   = FEP
+	RUNNING_PROCESS  = /hw01/ibridge/ib2/bin/osacom
+	RUNNING_TIME     = 0~00:25~23:58 | 1~00:25~23:58 | 2~00:25~23:58 | 3~00:25~23:58 | 4~00:25~23:58 | 5~00:25~23:58 | 6~00:25~23:58
+
+##################################################################################################
+
+##################################################################################################
+[OFSKFT5101]
+	DESCRIPTION      = 금융결제원  일괄전송
+	OBSERVATION_FLAG = Y
+	#RUN_SCRIPT      = /hw01/ibridge/shl/xrun OFSKFT5101
+	RUN_SCRIPT       = /hw01/ibridge/ib2/shl/ibrun2 OFSKFT5101
+	RUNNING_SERVER   = AP
+	RUNNING_PROCESS  = /hw01/ibridge/ib2/bin/bfscom2
+	RUNNING_TIME     = 0~00:25~23:55 | 1~00:25~23:55 | 2~00:25~23:55 | 3~00:25~23:55 | 4~00:25~23:55 | 5~00:25~23:55 | 6~00:25~23:55
+
+[OFRKFT5101]
+	DESCRIPTION      = 금융결제원  일괄전송
+	OBSERVATION_FLAG = Y
+	#RUN_SCRIPT      = /hw01/ibridge/shl/xrun OFRKFT5101
+	RUN_SCRIPT       = /hw01/ibridge/ib2/shl/ibrun2 OFRKFT5101
+	RUNNING_SERVER   = AP
+	RUNNING_PROCESS  = /hw01/ibridge/ib2/bin/bfrcom2
+	RUNNING_TIME     = 0~00:25~23:55 | 1~00:25~23:55 | 2~00:25~23:55 | 3~00:25~23:55 | 4~00:25~23:55 | 5~00:25~23:55 | 6~00:25~23:55
+
+[OISKFT5101]
+	DESCRIPTION      = 금융결제원  일괄전송
+	OBSERVATION_FLAG = Y
+	#RUN_SCRIPT      = /hw01/ibridge/shl/xrun OISKFT5101
+	RUN_SCRIPT       = /hw01/ibridge/ib2/shl/ibrun2 OISKFT5101
+	RUNNING_SERVER   = FEP
+	RUNNING_PROCESS  = /hw01/ibridge/ib2/bin/biscom2
+	RUNNING_TIME     = 0~00:25~23:55 | 1~00:25~23:55 | 2~00:25~23:55 | 3~00:25~23:55 | 4~00:25~23:55 | 5~00:25~23:55 | 6~00:25~23:55
+
+[OIRKFT5101]
+	DESCRIPTION      = 금융결제원  일괄전송
+	OBSERVATION_FLAG = Y
+	#RUN_SCRIPT      = /hw01/ibridge/shl/xrun OIRKFT5101
+	RUN_SCRIPT       = /hw01/ibridge/ib2/shl/ibrun2 OIRKFT5101
+	RUNNING_SERVER   = FEP
+	RUNNING_PROCESS  = /hw01/ibridge/ib2/bin/bircom2
+	RUNNING_TIME     = 0~00:25~23:55 | 1~00:25~23:55 | 2~00:25~23:55 | 3~00:25~23:55 | 4~00:25~23:55 | 5~00:25~23:55 | 6~00:25~23:55
+
+[BXSKFT5101]
+	DESCRIPTION      = 금융결제원  일괄전송
+	OBSERVATION_FLAG = N
+	#RUN_SCRIPT      = /hw01/ibridge/shl/xrun BXSKFT5101
+	RUN_SCRIPT       = /hw01/ibridge/ib2/shl/ibrun2 BXSKFT5101
+	RUNNING_SERVER   = FEP
+	RUNNING_PROCESS  = /hw01/ibridge/ib2/bin/bxskft1
+	RUNNING_TIME     = 0~00:25~23:55 | 1~00:25~23:55 | 2~00:25~23:55 | 3~00:25~23:55 | 4~00:25~23:55 | 5~00:25~23:55 | 6~00:25~23:55
+
+[BXRKFT5101]
+	DESCRIPTION      = 금융결제원  일괄전송
+	OBSERVATION_FLAG = N
+	#RUN_SCRIPT      = /hw01/ibridge/shl/xrun BXRKFT5101
+	RUN_SCRIPT       = /hw01/ibridge/ib2/shl/ibrun2 BXRKFT5101
+	RUNNING_SERVER   = FEP
+	RUNNING_PROCESS  = /hw01/ibridge/ib2/bin/bxrkft1
+	RUNNING_TIME     = 0~00:25~23:55 | 1~00:25~23:55 | 2~00:25~23:55 | 3~00:25~23:55 | 4~00:25~23:55 | 5~00:25~23:55 | 6~00:25~23:55
+
+[BXAKFT5101]
+	DESCRIPTION      = 금융결제원  일괄전송
+	OBSERVATION_FLAG = Y
+	RUN_SCRIPT       = /hw01/ibridge/ib2/shl/bxacom2.sh BXAKFT5101
+	RUNNING_SERVER   = FEP
+	RUNNING_PROCESS  = /hw01/ibridge/ib2/shl/bxacom2.sh
+	RUNNING_TIME     = 0~00:25~23:55 | 1~00:25~23:55 | 2~00:25~23:55 | 3~00:25~23:55 | 4~00:25~23:55 | 5~00:25~23:55 | 6~00:25~23:55
+
+##################################################################################################
 
